@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JRC ITS Team Assignment Board</title>
+  <style>
+    :root{
+      --bg:#151719;--panel:#202326;--panel2:#292d31;--border:#444a50;
+      --text:#f5f6f7;--muted:#b7bcc2;--accent:#4f8fd8;--green:#55b86a;
+      --amber:#e5a93f;--cyan:#35aeb0;--gray:#8f969d;
+      --suite-a:#4f8fd8;--suite-b:#55b86a;--suite-c:#9a73d9;--suite-d:#df8b3f;--suite-e:#35aeb0;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1600px;margin:0 auto;padding:18px}
+    .header,.card,.suite{background:var(--panel);border:1px solid var(--border);border-radius:16px}
+    .header{padding:18px;display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:62px;height:62px;border-radius:14px;background:var(--accent);display:grid;place-items:center;font-weight:700}
+    .eyebrow{color:var(--muted);font-size:14px}
+    h1{font-size:28px;margin:2px 0 4px}
+    .sub{color:var(--muted)}
+    .top-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .leadership-strip{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:8px 12px;border:1px solid var(--border);border-radius:10px;background:var(--panel2);font-size:13px}
+    .leadership-strip .label{color:var(--muted);font-weight:600}
+    .leadership-strip .leader{font-weight:700;color:var(--text)}
+    .leadership-strip .sep{color:var(--border)}
+    button,select,input{font:inherit}
+    button{border:1px solid var(--border);background:var(--panel2);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
+    button:hover{filter:brightness(1.12)}
+    .clock{padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
+    .metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin:14px 0}
+    .metric{background:var(--panel2);border:1px solid var(--border);border-radius:14px;padding:14px}
+    .metric-label{font-size:13px;color:var(--muted)}
+    .metric-value{font-size:28px;font-weight:700;margin-top:5px}
+    .progress{height:9px;background:#3a3f44;border-radius:999px;overflow:hidden;margin-top:10px}
+    .progress span{display:block;height:100%;background:var(--accent);width:0}
+    .toolbar{display:flex;justify-content:space-between;gap:12px;align-items:end;flex-wrap:wrap;margin:14px 0}
+    .filters{display:flex;gap:8px;flex-wrap:wrap}
+    .filters button.active{background:var(--accent)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .suite{overflow:hidden;position:relative}
+    .suite::before{content:"";display:block;height:5px;background:var(--suite-color,var(--accent))}
+    .suite[data-suite="A"]{--suite-color:var(--suite-a)}
+    .suite[data-suite="B"]{--suite-color:var(--suite-b)}
+    .suite[data-suite="C"]{--suite-color:var(--suite-c)}
+    .suite[data-suite="D"]{--suite-color:var(--suite-d)}
+    .suite[data-suite="E"]{--suite-color:var(--suite-e)}
+    .suite-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+    .suite-head strong{color:var(--suite-color)}
+    .suite .progress span{background:var(--suite-color)}
+    .lead-badge{font-size:11px;color:#171717;background:#e8b84a;border-radius:999px;padding:3px 7px;font-weight:700}
+    .suite-body{padding:14px}
+    .lead{font-size:14px;color:var(--muted);margin-bottom:12px}
+    .member{border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;background:#25292d}
+    .member-top{display:flex;justify-content:space-between;gap:12px}
+    .person{display:flex;gap:10px;align-items:center}
+    .avatar{width:40px;height:40px;border-radius:50%;background:#34393f;display:grid;place-items:center;font-weight:700}
+    .name{font-weight:700}
+    .title{font-size:13px;color:var(--muted)}
+    .assignment{margin-top:5px;font-size:14px}
+    .statusline{font-size:13px;white-space:nowrap;display:flex;align-items:center;gap:7px}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--gray)}
+    .working .dot{background:var(--green)} .testing .dot{background:var(--amber)} .complete .dot{background:var(--cyan)}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+    .controls .full{grid-column:1/-1}
+    label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
+    select,input{width:100%;background:#2b2f33;color:var(--text);border:1px solid var(--border);border-radius:9px;padding:10px}
+    .bottom{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:14px}
+    .card{padding:16px}
+    .priority{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #3d4247}
+    .priority:last-child{border-bottom:0}
+    .priority input{width:auto}
+    .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;padding:12px 16px;border:1px solid var(--border);border-radius:14px;background:var(--panel)}
+    .tv .controls,.tv .filters,.tv #tvBtn{display:none}
+    .tv .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .tv .member{font-size:1.05rem}
+    @media(max-width:1100px){.metrics{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:800px){.grid,.bottom{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+<div class="wrap" id="board">
+  <section class="header">
+    <div class="brand">
+      <div class="logo">JRC</div>
+      <div>
+        <div class="eyebrow">JRC Deployment Project Team</div>
+        <h1>JRC ITS Team Assignments</h1>
+        <div class="sub">Clinic transition deployment • Suites A–E</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="leadership-strip" aria-label="Deployment leadership">
+        <span class="label">Deployment Leadership</span>
+        <span class="leader">Justice — Team Lead</span>
+        <span class="sep">|</span>
+        <span class="leader">Debbie — Team Lead</span>
+      </div>
+      <div class="clock" id="clock"></div>
+      <button id="tvBtn">TV Display</button>
+      <button id="resetBtn">Reset Board</button>
+    </div>
+  </section>
+
+  <section class="metrics">
+    <div class="metric"><div class="metric-label">ITS Team</div><div class="metric-value" id="teamCount">13</div></div>
+    <div class="metric"><div class="metric-label">Team Leads</div><div class="metric-value">2</div></div>
+    <div class="metric"><div class="metric-label">Working</div><div class="metric-value" id="workingCount">0</div></div>
+    <div class="metric"><div class="metric-label">Testing</div><div class="metric-value" id="testingCount">0</div></div>
+    <div class="metric"><div class="metric-label">Completed</div><div class="metric-value" id="completeCount">0</div></div>
+    <div class="metric"><div class="metric-label">Overall Progress</div><div class="metric-value" id="overallPercent">0%</div><div class="progress"><span id="overallBar"></span></div></div>
+  </section>
+
+  <div class="toolbar">
+    <div>
+      <div style="font-weight:700;font-size:18px">Suite Assignment Board</div>
+      <div class="sub">Update each employee's suite, daily assignment, and status.</div>
+    </div>
+    <div class="filters" id="filters"></div>
+  </div>
+
+  <main class="grid" id="suiteGrid"></main>
+
+  <section class="bottom" style="grid-template-columns:1fr">
+    <div class="card">
+      <h2 style="margin-top:0">Project Priorities</h2>
+      <div id="priorityList"></div>
+    </div>
+  </section>
+
+  <div class="legend">
+    <strong>Status legend:</strong>
+    <span><span class="dot" style="display:inline-block"></span> Not Started</span>
+    <span><span class="dot" style="display:inline-block;background:var(--green)"></span> Working</span>
+    <span><span class="dot" style="display:inline-block;background:var(--amber)"></span> Testing</span>
+    <span><span class="dot" style="display:inline-block;background:var(--cyan)"></span> Complete</span>
+  </div>
+</div>
+
+<script>
+const initialTeam = [
+  {id:1,name:'Justice',initials:'JS',title:'Team Lead',suite:'A',assignment:'Clinic deployment oversight',status:'not-started',lead:true},
+  {id:2,name:'Debbie',initials:'DB',title:'Team Lead',suite:'B',assignment:'Clinic deployment oversight',status:'not-started',lead:true},
+  {id:3,name:'Narith',initials:'NR',title:'Systems Administrator',suite:'A',assignment:'Assignment pending',status:'not-started'},
+  {id:4,name:'Scott',initials:'SC',title:'Systems Administrator II',suite:'A',assignment:'Assignment pending',status:'not-started'},
+  {id:5,name:'Linda',initials:'LN',title:'ITS Team Member',suite:'B',assignment:'Assignment pending',status:'not-started'},
+  {id:6,name:'Tony',initials:'TN',title:'Systems Administrator II',suite:'B',assignment:'Assignment pending',status:'not-started'},
+  {id:7,name:'Jody',initials:'JD',title:'ITS Team Member',suite:'C',assignment:'Assignment pending',status:'not-started'},
+  {id:8,name:'Amber',initials:'AB',title:'ITS Team Member',suite:'C',assignment:'Assignment pending',status:'not-started'},
+  {id:9,name:'Jeffrey',initials:'JF',title:'ITS Team Member',suite:'C',assignment:'Assignment pending',status:'not-started'},
+  {id:10,name:'Tami',initials:'TM',title:'ITS Team Member',suite:'D',assignment:'Assignment pending',status:'not-started'},
+  {id:11,name:'Kyle',initials:'KL',title:'ITS Team Member',suite:'D',assignment:'Assignment pending',status:'not-started'},
+  {id:12,name:'Carter',initials:'CR',title:'ITS Team Member',suite:'E',assignment:'Assignment pending',status:'not-started'},
+  {id:13,name:'Jake',initials:'JK',title:'ITS Team Member',suite:'E',assignment:'Assignment pending',status:'not-started'}
+];
+
+const initialPriorities = [
+  'Move equipment and supplies into the clinic',
+  'Unpack and organize hardware by suite',
+  'Install computers, phones, and peripherals',
+  'Validate network and application connectivity',
+  'Confirm printing and device readiness',
+  'Complete final walkthrough for Suites A–E'
+];
+
+let team = JSON.parse(localStorage.getItem('jrcTeam') || 'null') || structuredClone(initialTeam);
+let priorities = JSON.parse(localStorage.getItem('jrcPriorities') || 'null') || initialPriorities.map(label=>({label,complete:false}));
+let filter = 'all';
+const suites = ['A','B','C','D','E'];
+const labels = {'not-started':'Not Started','working':'Working','testing':'Testing','complete':'Complete'};
+
+function save(){
+  localStorage.setItem('jrcTeam', JSON.stringify(team));
+  localStorage.setItem('jrcPriorities', JSON.stringify(priorities));
+}
+
+function esc(v){
+  return String(v).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function suiteProgress(s){
+  const m=team.filter(x=>x.suite===s);
+  return m.length ? Math.round(m.filter(x=>x.status==='complete').length/m.length*100) : 0;
+}
+
+function memberCard(m){
+  return `<div class="member ${m.status}">
+    <div class="member-top">
+      <div class="person">
+        <div class="avatar">${m.initials}</div>
+        <div><div class="name">${esc(m.name)} ${m.lead?'<span class="lead-badge">Team Lead</span>':''}</div>
+        <div class="title">${esc(m.title)}</div><div class="assignment">${esc(m.assignment)}</div></div>
+      </div>
+      <div class="statusline"><span class="dot"></span>${labels[m.status]}</div>
+    </div>
+    <div class="controls">
+      <div><label>Assigned suite</label><select data-type="suite" data-id="${m.id}">${suites.map(s=>`<option ${m.suite===s?'selected':''}>${s}</option>`).join('')}</select></div>
+      <div><label>Status</label><select data-type="status" data-id="${m.id}">${Object.entries(labels).map(([v,l])=>`<option value="${v}" ${m.status===v?'selected':''}>${l}</option>`).join('')}</select></div>
+      <div class="full"><label>Daily assignment</label><input data-type="assignment" data-id="${m.id}" value="${esc(m.assignment)}"></div>
+    </div>
+  </div>`;
+}
+
+function renderSuites(){
+  const list = filter==='all' ? suites : [filter];
+  document.getElementById('suiteGrid').innerHTML = list.map(s=>{
+    const members=team.filter(m=>m.suite===s);
+    const lead=members.find(m=>m.lead);
+    const p=suiteProgress(s);
+    return `<section class="suite" data-suite="${s}">
+      <div class="suite-head"><div><div class="eyebrow">Suite</div><div style="font-size:20px;font-weight:700">Suite ${s}</div></div><div><strong>${p}%</strong></div></div>
+      <div class="suite-body"><div class="lead">Team Lead: <strong style="color:white">${lead?lead.name:'To be assigned'}</strong></div>
+      ${members.map(memberCard).join('') || '<div class="sub">No team members assigned.</div>'}
+      <div class="progress"><span style="width:${p}%"></span></div></div>
+    </section>`;
+  }).join('');
+
+  document.querySelectorAll('[data-type]').forEach(el=>{
+    el.addEventListener('change', e=>{
+      const m=team.find(x=>x.id===Number(e.target.dataset.id));
+      if(e.target.dataset.type==='suite') m.suite=e.target.value;
+      if(e.target.dataset.type==='status') m.status=e.target.value;
+      if(e.target.dataset.type==='assignment') m.assignment=e.target.value.trim() || 'Assignment pending';
+      save(); render();
+    });
+  });
+}
+
+function renderFilters(){
+  document.getElementById('filters').innerHTML=['all',...suites].map(s=>`<button data-filter="${s}" class="${filter===s?'active':''}">${s==='all'?'All Suites':'Suite '+s}</button>`).join('');
+  document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;render();}));
+}
+
+function renderPriorities(){
+  document.getElementById('priorityList').innerHTML=priorities.map((p,i)=>`<label class="priority"><input type="checkbox" data-priority="${i}" ${p.complete?'checked':''}><span style="${p.complete?'text-decoration:line-through;color:var(--muted)':''}">${esc(p.label)}</span></label>`).join('');
+  document.querySelectorAll('[data-priority]').forEach(c=>c.addEventListener('change',()=>{priorities[Number(c.dataset.priority)].complete=c.checked;save();renderPriorities();}));
+}
+
+function metrics(){
+  const working=team.filter(m=>m.status==='working').length;
+  const testing=team.filter(m=>m.status==='testing').length;
+  const complete=team.filter(m=>m.status==='complete').length;
+  const pct=Math.round(complete/team.length*100);
+  teamCount.textContent=team.length; workingCount.textContent=working; testingCount.textContent=testing; completeCount.textContent=complete;
+  overallPercent.textContent=pct+'%'; overallBar.style.width=pct+'%';
+}
+
+function render(){renderFilters();renderSuites();renderPriorities();metrics();}
+function updateClock(){clock.textContent=new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',second:'2-digit'}).format(new Date());}
+tvBtn.addEventListener('click',()=>{board.classList.toggle('tv');tvBtn.textContent=board.classList.contains('tv')?'Exit TV Display':'TV Display';});
+resetBtn.addEventListener('click',()=>{if(confirm('Reset all assignments, statuses, and priorities?')){team=structuredClone(initialTeam);priorities=initialPriorities.map(label=>({label,complete:false}));save();render();}});
+setInterval(updateClock,1000);updateClock();render();
+</script>
+</body>
+</html>
