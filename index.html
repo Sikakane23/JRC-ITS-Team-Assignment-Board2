@@ -104,8 +104,8 @@
       </div>
     </div>
     <div class="top-actions">
-      <div class="leadership-strip" aria-label="JRC Leadership Contacts">
-        <span class="label">JRC Leadership Contacts</span>
+      <div class="leadership-strip" aria-label="JRC leadership contacts">
+        <span class="label">Deployment Leadership</span>
         <span class="leader">Justice — Team Lead</span>
         <span class="sep">|</span>
         <span class="leader">Debbie — Team Lead</span>
@@ -210,7 +210,7 @@ function memberCard(m){
     </div>
     <div class="controls">
       <div><label>Assigned suite</label><select data-type="suite" data-id="${m.id}">${suites.map(s=>`<option ${m.suite===s?'selected':''}>${s}</option>`).join('')}</select></div>
-      <div><label>Status</label><select data-type="status" data-id="${m.id}">${Object.entries(labels).map(([v,l])=>`<option value="${v}" ${m.status===v?'selected':''}>${l}</option>`).join('')}</s[...]
+      <div><label>Status</label><select data-type="status" data-id="${m.id}">${Object.entries(labels).map(([v,l])=>`<option value="${v}" ${m.status===v?'selected':''}>${l}</option>`).join('')}</select></div>
       <div class="full"><label>Daily assignment</label><input data-type="assignment" data-id="${m.id}" value="${esc(m.assignment)}"></div>
     </div>
   </div>`;
@@ -271,8 +271,8 @@ function metrics(){
 
 function render(){renderFilters();renderSuites();renderPriorities();metrics();}
 function updateClock(){clock.textContent=new Intl.DateTimeFormat('en-US',{hour:'numeric',minute:'2-digit',second:'2-digit'}).format(new Date());}
-tvBtn.addEventListener('click',()=>{board.classList.toggle('tv');tvBtn.textContent=board.classList.contains('tv')?'Exit JRC Lobby Display':'JRC Lobby Display';});
-resetBtn.addEventListener('click',()=>{if(confirm('Reset all assignments, statuses, and priorities?')){team=structuredClone(initialTeam);priorities=initialPriorities.map(label=>({label,complete:f[...]
+tvBtn.addEventListener('click',()=>{board.classList.toggle('tv');tvBtn.textContent=board.classList.contains('tv')?'Exit TV Display':'TV Display';});
+resetBtn.addEventListener('click',()=>{if(confirm('Reset all assignments, statuses, and priorities?')){team=structuredClone(initialTeam);priorities=initialPriorities.map(label=>({label,complete:false}));save();render();}});
 setInterval(updateClock,1000);updateClock();render();
 </script>
 </body>
