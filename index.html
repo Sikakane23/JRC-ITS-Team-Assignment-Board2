@@ -47,7 +47,21 @@
     .priority-banner-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px}
     .priority-banner-item{display:flex;align-items:center;gap:8px;font-size:13px;line-height:1.25}
     .priority-banner-item input{width:auto;accent-color:var(--accent)}
+    .infrastructure{margin:14px 0}
+    .infrastructure-head{display:flex;justify-content:space-between;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:10px}
+    .infrastructure-title{font-weight:700;font-size:18px;color:#2f5d35}
+    .infrastructure-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .infrastructure-card{background:#fff;border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:14px;padding:14px;box-shadow:0 1px 2px rgba(32,48,38,.04)}
+    .infrastructure-card.network{border-top-color:var(--suite-a)}
+    .infrastructure-card.wireless{border-top-color:var(--cyan)}
+    .infrastructure-owner{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .infrastructure-avatar{width:40px;height:40px;border-radius:50%;background:#e7eee5;display:grid;place-items:center;font-weight:700}
+    .infrastructure-role{font-size:13px;color:var(--muted);margin-top:2px}
+    .ownership-badge{display:inline-block;margin-top:5px;padding:3px 7px;border-radius:999px;background:#edf4e8;color:#2f5d35;font-size:11px;font-weight:700}
+    .scope-list{margin:0;padding-left:18px;color:var(--text);font-size:13px;line-height:1.45}
+    .scope-list li+li{margin-top:5px}
     @media(max-width:1000px){.priority-banner-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:1000px){.infrastructure-grid{grid-template-columns:1fr}}
     @media(max-width:650px){.priority-banner-list{grid-template-columns:1fr}}
     .filters{display:flex;gap:8px;flex-wrap:wrap}
     .filters button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
@@ -133,6 +147,49 @@
     <div class="priority-banner-list" id="priorityBannerList"></div>
   </section>
 
+  <section class="infrastructure" aria-labelledby="infrastructureTitle">
+    <div class="infrastructure-head">
+      <div>
+        <div class="infrastructure-title" id="infrastructureTitle">Technical Infrastructure Leads</div>
+        <div class="sub">Accountable owners for clinic network, wireless, and voice readiness.</div>
+      </div>
+    </div>
+    <div class="infrastructure-grid">
+      <article class="infrastructure-card network">
+        <div class="infrastructure-owner">
+          <div class="infrastructure-avatar">SC</div>
+          <div><div class="name">Scott</div><div class="infrastructure-role">Core Network Lead</div><span class="ownership-badge">Outcome Owner</span></div>
+        </div>
+        <ul class="scope-list">
+          <li>Build and configure the clinic core network.</li>
+          <li>Validate switching, VLANs, uplinks, connectivity, and readiness.</li>
+          <li>Partner with Tony through testing and activation.</li>
+        </ul>
+      </article>
+      <article class="infrastructure-card network">
+        <div class="infrastructure-owner">
+          <div class="infrastructure-avatar">TN</div>
+          <div><div class="name">Tony</div><div class="infrastructure-role">Core Network Lead</div><span class="ownership-badge">Outcome Owner</span></div>
+        </div>
+        <ul class="scope-list">
+          <li>Build and configure the clinic core network.</li>
+          <li>Validate switching, VLANs, uplinks, connectivity, and readiness.</li>
+          <li>Partner with Scott through testing and activation.</li>
+        </ul>
+      </article>
+      <article class="infrastructure-card wireless">
+        <div class="infrastructure-owner">
+          <div class="infrastructure-avatar">NR</div>
+          <div><div class="name">Narith</div><div class="infrastructure-role">Wireless &amp; VoIP Lead</div><span class="ownership-badge">Outcome Owner</span></div>
+        </div>
+        <ul class="scope-list">
+          <li><strong>Wireless:</strong> Install and configure all 22 Arista APs; validate connectivity and coverage.</li>
+          <li><strong>VoIP:</strong> Configure phones, assign extensions, test connectivity, and confirm deployment readiness.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
   <div class="toolbar">
     <div>
       <div style="font-weight:700;font-size:18px">Suite Assignment Board</div>
@@ -156,10 +213,10 @@
 const initialTeam = [
   {id:1,name:'Justice',initials:'JS',title:'Team Lead',suite:'A',assignment:'Clinic deployment oversight',status:'not-started',lead:true},
   {id:2,name:'Debbie',initials:'DB',title:'Team Lead',suite:'B',assignment:'Clinic deployment oversight',status:'not-started',lead:true},
-  {id:3,name:'Narith',initials:'NR',title:'Systems Administrator',suite:'A',assignment:'Assignment pending',status:'not-started'},
-  {id:4,name:'Scott',initials:'SC',title:'Systems Administrator II',suite:'A',assignment:'Assignment pending',status:'not-started'},
+  {id:3,name:'Narith',initials:'NR',title:'Systems Administrator',suite:'A',assignment:'Wireless (22 Arista APs) and VoIP lead',status:'not-started'},
+  {id:4,name:'Scott',initials:'SC',title:'Systems Administrator II',suite:'A',assignment:'Core network lead',status:'not-started'},
   {id:5,name:'Linda',initials:'LN',title:'ITS Team Member',suite:'B',assignment:'Assignment pending',status:'not-started'},
-  {id:6,name:'Tony',initials:'TN',title:'Systems Administrator II',suite:'B',assignment:'Assignment pending',status:'not-started'},
+  {id:6,name:'Tony',initials:'TN',title:'Systems Administrator II',suite:'B',assignment:'Core network lead',status:'not-started'},
   {id:7,name:'Jody',initials:'JD',title:'ITS Team Member',suite:'C',assignment:'Assignment pending',status:'not-started'},
   {id:8,name:'Amber',initials:'AB',title:'ITS Team Member',suite:'C',assignment:'Assignment pending',status:'not-started'},
   {id:9,name:'Jeffrey',initials:'JF',title:'ITS Team Member',suite:'C',assignment:'Assignment pending',status:'not-started'},
@@ -180,6 +237,16 @@ const initialPriorities = [
 
 let team = JSON.parse(localStorage.getItem('jrcTeam') || 'null') || structuredClone(initialTeam);
 let priorities = JSON.parse(localStorage.getItem('jrcPriorities') || 'null') || initialPriorities.map(label=>({label,complete:false}));
+const infrastructureAssignments = {
+  Narith:'Wireless (22 Arista APs) and VoIP lead',
+  Scott:'Core network lead',
+  Tony:'Core network lead'
+};
+team.forEach(member=>{
+  if(infrastructureAssignments[member.name] && member.assignment==='Assignment pending'){
+    member.assignment=infrastructureAssignments[member.name];
+  }
+});
 let filter = 'all';
 const suites = ['A','B','C','D','E'];
 const labels = {'not-started':'Not Started','working':'Working','testing':'Testing','complete':'Complete'};
