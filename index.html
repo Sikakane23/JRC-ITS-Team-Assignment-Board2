@@ -151,40 +151,41 @@
     <div class="infrastructure-head">
       <div>
         <div class="infrastructure-title" id="infrastructureTitle">Technical Infrastructure Leads</div>
-        <div class="sub">Accountable owners for clinic network, wireless, and voice readiness.</div>
+        <div class="sub">Accountable owners for JRC network, wireless, and voice readiness.</div>
       </div>
     </div>
     <div class="infrastructure-grid">
       <article class="infrastructure-card network">
         <div class="infrastructure-owner">
           <div class="infrastructure-avatar">SC</div>
-          <div><div class="name">Scott</div><div class="infrastructure-role">Core Network Lead</div><span class="ownership-badge">Outcome Owner</span></div>
+          <div><div class="name">Scott</div><div class="infrastructure-role">Core Network Co-Lead</div><span class="ownership-badge">Outcome Owner</span></div>
         </div>
         <ul class="scope-list">
-          <li>Build and configure the clinic core network.</li>
+          <li>Build and configure the JRC core network.</li>
           <li>Validate switching, VLANs, uplinks, connectivity, and readiness.</li>
-          <li>Partner with Tony through testing and activation.</li>
+          <li>Partner with Tony through testing.</li>
+          <li>Will work on modalities as assigned.</li>
         </ul>
       </article>
       <article class="infrastructure-card network">
         <div class="infrastructure-owner">
           <div class="infrastructure-avatar">TN</div>
-          <div><div class="name">Tony</div><div class="infrastructure-role">Core Network Lead</div><span class="ownership-badge">Outcome Owner</span></div>
+          <div><div class="name">Tony</div><div class="infrastructure-role">Core Network Co-Lead</div><span class="ownership-badge">Outcome Owner</span></div>
         </div>
         <ul class="scope-list">
-          <li>Build and configure the clinic core network.</li>
+          <li>Build and configure the JRC core network.</li>
           <li>Validate switching, VLANs, uplinks, connectivity, and readiness.</li>
-          <li>Partner with Scott through testing and activation.</li>
+          <li>Partner with Scott through testing.</li>
         </ul>
       </article>
       <article class="infrastructure-card wireless">
         <div class="infrastructure-owner">
           <div class="infrastructure-avatar">NR</div>
-          <div><div class="name">Narith</div><div class="infrastructure-role">Wireless &amp; VoIP Lead</div><span class="ownership-badge">Outcome Owner</span></div>
+          <div><div class="name">Narith</div><div class="infrastructure-role">Wireless &amp; Yealink Lead</div><span class="ownership-badge">Outcome Owner</span></div>
         </div>
         <ul class="scope-list">
           <li><strong>Wireless:</strong> Install and configure all 22 Arista APs; validate connectivity and coverage.</li>
-          <li><strong>VoIP:</strong> Configure phones, assign extensions, test connectivity, and confirm deployment readiness.</li>
+          <li><strong>Yealink:</strong> Configure phones, assign extensions, test connectivity, and confirm deployment readiness.</li>
         </ul>
       </article>
     </div>
@@ -210,13 +211,20 @@
 </div>
 
 <script>
+const dailyAssignments = [
+  'Unbox and position',
+  'Deliverer',
+  'Cable management',
+  'Runner'
+];
+
 const initialTeam = [
-  {id:1,name:'Justice',initials:'JS',title:'Team Lead',suite:'A',assignment:'Clinic deployment oversight',status:'not-started',lead:true},
-  {id:2,name:'Debbie',initials:'DB',title:'Team Lead',suite:'B',assignment:'Clinic deployment oversight',status:'not-started',lead:true},
-  {id:3,name:'Narith',initials:'NR',title:'Systems Administrator',suite:'A',assignment:'Wireless (22 Arista APs) and VoIP lead',status:'not-started'},
-  {id:4,name:'Scott',initials:'SC',title:'Systems Administrator II',suite:'A',assignment:'Core network lead',status:'not-started'},
+  {id:1,name:'Justice',initials:'JS',title:'Team Lead',suite:'A',assignment:'Assignment pending',status:'not-started',lead:true},
+  {id:2,name:'Debbie',initials:'DB',title:'Team Lead',suite:'B',assignment:'Assignment pending',status:'not-started',lead:true},
+  {id:3,name:'Narith',initials:'NR',title:'Systems Administrator',suite:'A',assignment:'Assignment pending',status:'not-started'},
+  {id:4,name:'Scott',initials:'SC',title:'Systems Administrator II',suite:'A',assignment:'Assignment pending',status:'not-started'},
   {id:5,name:'Linda',initials:'LN',title:'ITS Team Member',suite:'B',assignment:'Assignment pending',status:'not-started'},
-  {id:6,name:'Tony',initials:'TN',title:'Systems Administrator II',suite:'B',assignment:'Core network lead',status:'not-started'},
+  {id:6,name:'Tony',initials:'TN',title:'Systems Administrator II',suite:'B',assignment:'Assignment pending',status:'not-started'},
   {id:7,name:'Jody',initials:'JD',title:'ITS Team Member',suite:'C',assignment:'Assignment pending',status:'not-started'},
   {id:8,name:'Amber',initials:'AB',title:'ITS Team Member',suite:'C',assignment:'Assignment pending',status:'not-started'},
   {id:9,name:'Jeffrey',initials:'JF',title:'ITS Team Member',suite:'C',assignment:'Assignment pending',status:'not-started'},
@@ -237,15 +245,8 @@ const initialPriorities = [
 
 let team = JSON.parse(localStorage.getItem('jrcTeam') || 'null') || structuredClone(initialTeam);
 let priorities = JSON.parse(localStorage.getItem('jrcPriorities') || 'null') || initialPriorities.map(label=>({label,complete:false}));
-const infrastructureAssignments = {
-  Narith:'Wireless (22 Arista APs) and VoIP lead',
-  Scott:'Core network lead',
-  Tony:'Core network lead'
-};
 team.forEach(member=>{
-  if(infrastructureAssignments[member.name] && member.assignment==='Assignment pending'){
-    member.assignment=infrastructureAssignments[member.name];
-  }
+  if(!dailyAssignments.includes(member.assignment)) member.assignment='Assignment pending';
 });
 let filter = 'all';
 const suites = ['A','B','C','D','E'];
@@ -278,7 +279,10 @@ function memberCard(m){
     <div class="controls">
       <div><label>Assigned suite</label><select data-type="suite" data-id="${m.id}">${suites.map(s=>`<option ${m.suite===s?'selected':''}>${s}</option>`).join('')}</select></div>
       <div><label>Status</label><select data-type="status" data-id="${m.id}">${Object.entries(labels).map(([v,l])=>`<option value="${v}" ${m.status===v?'selected':''}>${l}</option>`).join('')}</select></div>
-      <div class="full"><label>Daily assignment</label><input data-type="assignment" data-id="${m.id}" value="${esc(m.assignment)}"></div>
+      <div class="full"><label>Daily assignment</label><select data-type="assignment" data-id="${m.id}">
+        <option value="" ${m.assignment==='Assignment pending'?'selected':''}>Select assignment</option>
+        ${dailyAssignments.map(a=>`<option value="${esc(a)}" ${m.assignment===a?'selected':''}>${esc(a)}</option>`).join('')}
+      </select></div>
     </div>
   </div>`;
 }
