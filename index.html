@@ -51,7 +51,9 @@
     .infrastructure-head{display:flex;justify-content:space-between;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:10px}
     .infrastructure-title{font-weight:700;font-size:18px;color:#2f5d35}
     .infrastructure-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .leadership-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .infrastructure-card{background:#fff;border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:14px;padding:14px;box-shadow:0 1px 2px rgba(32,48,38,.04)}
+    .infrastructure-card.leadership{border-top-color:var(--accent)}
     .infrastructure-card.network{border-top-color:var(--suite-a)}
     .infrastructure-card.wireless{border-top-color:var(--cyan)}
     .infrastructure-owner{display:flex;align-items:center;gap:10px;margin-bottom:10px}
@@ -118,11 +120,9 @@
       </div>
     </div>
     <div class="top-actions">
-      <div class="leadership-strip" aria-label="Deployment leadership">
-        <span class="label">Deployment Leadership</span>
-        <span class="leader">Justice — Team Lead</span>
-        <span class="sep">|</span>
-        <span class="leader">Debbie — Team Lead</span>
+      <div class="leadership-strip" aria-label="Overall project lead">
+        <span class="label">Overall Project Lead:</span>
+        <span class="leader">Vern</span>
       </div>
       <div class="clock" id="clock"></div>
       <button id="tvBtn">TV Display</button>
@@ -145,6 +145,26 @@
       <div class="priority-banner-summary" id="prioritySummary">0 of 6 complete</div>
     </div>
     <div class="priority-banner-list" id="priorityBannerList"></div>
+  </section>
+
+  <section class="infrastructure" aria-labelledby="leadershipTeamTitle">
+    <div class="infrastructure-head">
+      <div class="infrastructure-title" id="leadershipTeamTitle">Deployment Leadership Team</div>
+    </div>
+    <div class="infrastructure-grid leadership-grid">
+      <article class="infrastructure-card leadership">
+        <div class="infrastructure-owner">
+          <div class="infrastructure-avatar">DB</div>
+          <div><div class="name">Debbie</div><span class="ownership-badge">Deployment Lead</span></div>
+        </div>
+      </article>
+      <article class="infrastructure-card leadership">
+        <div class="infrastructure-owner">
+          <div class="infrastructure-avatar">JS</div>
+          <div><div class="name">Justice</div><span class="ownership-badge">Deployment Lead</span></div>
+        </div>
+      </article>
+    </div>
   </section>
 
   <section class="infrastructure" aria-labelledby="infrastructureTitle">
@@ -181,7 +201,7 @@
       <article class="infrastructure-card wireless">
         <div class="infrastructure-owner">
           <div class="infrastructure-avatar">NR</div>
-          <div><div class="name">Narith</div><div class="infrastructure-role">Wireless &amp; Yealink Lead</div><span class="ownership-badge">Outcome Owner</span></div>
+          <div><div class="name">Narith</div><div class="infrastructure-role">Wireless and Phones Lead</div><span class="ownership-badge">Outcome Owner</span></div>
         </div>
         <ul class="scope-list">
           <li><strong>Wireless:</strong> Install and configure all 22 Arista APs; validate connectivity and coverage.</li>
@@ -194,7 +214,6 @@
   <div class="toolbar">
     <div>
       <div style="font-weight:700;font-size:18px">Suite Assignment Board</div>
-      <div class="sub">Update each employee's suite, daily assignment, and status.</div>
     </div>
     <div class="filters" id="filters"></div>
   </div>
@@ -212,9 +231,9 @@
 
 <script>
 const dailyAssignments = [
-  'Unbox and position',
+  'Unbox and Position Equipment',
   'Deliverer',
-  'Cable management',
+  'Cable Management',
   'Runner'
 ];
 
@@ -246,10 +265,19 @@ const initialPriorities = [
 let team = JSON.parse(localStorage.getItem('jrcTeam') || 'null') || structuredClone(initialTeam);
 let priorities = JSON.parse(localStorage.getItem('jrcPriorities') || 'null') || initialPriorities.map(label=>({label,complete:false}));
 team.forEach(member=>{
+  if(member.assignment==='Unbox and position') member.assignment='Unbox and Position Equipment';
+  if(member.assignment==='Cable management') member.assignment='Cable Management';
   if(!dailyAssignments.includes(member.assignment)) member.assignment='Assignment pending';
 });
 let filter = 'all';
 const suites = ['A','B','C','D','E'];
+const suiteLeads = {
+  A: 'Justice',
+  B: 'Debbie',
+  C: 'Justice',
+  D: 'Justice and Debbie',
+  E: 'Debbie'
+};
 const labels = {'not-started':'Not Started','working':'Working','testing':'Testing','complete':'Complete'};
 
 function save(){
@@ -291,12 +319,12 @@ function renderSuites(){
   const list = filter==='all' ? suites : [filter];
   document.getElementById('suiteGrid').innerHTML = list.map(s=>{
     const members=team.filter(m=>m.suite===s);
-    const lead=members.find(m=>m.lead);
+    const assignedMembers=members.filter(m=>!m.lead);
     const p=suiteProgress(s);
     return `<section class="suite" data-suite="${s}">
       <div class="suite-head"><div><div class="eyebrow">Suite</div><div style="font-size:20px;font-weight:700">Suite ${s}</div></div><div><strong>${p}%</strong></div></div>
-      <div class="suite-body"><div class="lead">Team Lead: <strong style="color:var(--text)">${lead?lead.name:'To be assigned'}</strong></div>
-      ${members.map(memberCard).join('') || '<div class="sub">No team members assigned.</div>'}
+      <div class="suite-body"><div class="lead">Team Lead: <strong style="color:var(--text)">${suiteLeads[s] || 'To be assigned'}</strong></div>
+      ${assignedMembers.map(memberCard).join('') || '<div class="sub">No team members assigned.</div>'}
       <div class="progress"><span style="width:${p}%"></span></div></div>
     </section>`;
   }).join('');
